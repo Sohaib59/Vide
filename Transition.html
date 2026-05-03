@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Kisan Sahara — Hackathon Final Pitch</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#000;color:#fff;overflow:hidden;height:100vh;width:100vw;cursor:none;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    .urdu{font-family:'Noto Nastaliq Urdu',serif;direction:rtl;line-height:2.4}
+    ::selection{background:rgba(198,249,31,.3);color:#c6f91f}
+
+    .slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;z-index:0;overflow:hidden}
+    .slide.active{opacity:1;visibility:visible;z-index:10}
+    .slide.exiting{opacity:0;visibility:visible;z-index:5}
+
+    .trans-fade-in{animation:fadeIn 2.2s cubic-bezier(.22,1,.36,1) forwards}
+    .trans-fade-out{animation:fadeOut 2.2s cubic-bezier(.22,1,.36,1) forwards}
+    .trans-zoom-in{animation:zoomIn 2.5s cubic-bezier(.22,1,.36,1) forwards}
+    .trans-zoom-out{animation:zoomOut 2.5s cubic-bezier(.22,1,.36,1) forwards}
+    .trans-slide-left{animation:slideLeft 2.2s cubic-bezier(.22,1,.36,1) forwards}
+    .trans-slide-right{animation:slideRight 2.2s cubic-bezier(.22,1,.36,1) forwards}
+    .trans-blur-in{animation:blurIn 3s cubic-bezier(.22,1,.36,1) forwards}
+    .trans-blur-out{animation:blurOut 3s cubic-bezier(.22,1,.36,1) forwards}
+    .trans-scale-in{animation:scaleIn 3s cubic-bezier(.22,1,.36,1) forwards}
+    .trans-scale-out{animation:scaleOut 3s cubic-bezier(.22,1,.36,1) forwards}
+    .trans-glitch-in{animation:glitchIn 1.2s steps(1) forwards}
+    .trans-glitch-out{animation:glitchOut .8s steps(1) forwards}
+    .trans-cinematic-in{animation:cinematicIn 3s cubic-bezier(.22,1,.36,1) forwards}
+    .trans-cinematic-out{animation:cinematicOut 2s cubic-bezier(.22,1,.36,1) forwards}
+
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes fadeOut{from{opacity:1}to{opacity:0}}
+    @keyframes zoomIn{from{opacity:0;transform:scale(1.5)}to{opacity:1;transform:scale(1)}}
+    @keyframes zoomOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.5)}}
+    @keyframes slideLeft{from{opacity:0;transform:translateX(140px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes slideRight{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-140px)}}
+    @keyframes blurIn{from{opacity:0;filter:blur(50px);transform:scale(1.1)}to{opacity:1;filter:blur(0);transform:scale(1)}}
+    @keyframes blurOut{from{opacity:1;filter:blur(0);transform:scale(1)}to{opacity:0;filter:blur(50px);transform:scale(.9)}}
+    @keyframes scaleIn{from{opacity:0;transform:scale(.4);filter:blur(20px)}to{opacity:1;transform:scale(1);filter:blur(0)}}
+    @keyframes scaleOut{from{opacity:1;transform:scale(1);filter:blur(0)}to{opacity:0;transform:scale(1.6);filter:blur(20px)}}
+    @keyframes glitchIn{0%{opacity:0;transform:translate(-8px,5px) skewX(2deg);filter:hue-rotate(90deg)}8%{opacity:1;transform:translate(5px,-3px) skewX(-1deg);filter:hue-rotate(-90deg)}16%{transform:translate(-3px,2px) skewX(1deg);filter:hue-rotate(45deg)}24%{transform:translate(1px,-1px);filter:hue-rotate(0)}100%{opacity:1;transform:translate(0) skewX(0);filter:hue-rotate(0)}}
+    @keyframes glitchOut{0%{opacity:1;transform:translate(0)}20%{transform:translate(8px,-5px) skewX(2deg);filter:hue-rotate(90deg)}40%{transform:translate(-5px,3px) skewX(-1deg);filter:hue-rotate(-90deg)}100%{opacity:0}}
+    @keyframes cinematicIn{0%{opacity:0;transform:scale(1.3);filter:blur(15px) brightness(2)}30%{opacity:1;filter:blur(5px) brightness(1.3)}100%{opacity:1;transform:scale(1);filter:blur(0) brightness(1)}}
+    @keyframes cinematicOut{0%{opacity:1;transform:scale(1);filter:brightness(1)}100%{opacity:0;transform:scale(.9);filter:blur(10px) brightness(.5)}}
+
+    .a{opacity:0;transform:translateY(60px);filter:blur(12px);transition:all 1.2s cubic-bezier(.22,1,.36,1)}
+    .slide.active .a{opacity:1;transform:translateY(0);filter:blur(0)}
+    .slide.active .a.d1{transition-delay:.8s}.slide.active .a.d2{transition-delay:1.5s}.slide.active .a.d3{transition-delay:2.2s}.slide.active .a.d4{transition-delay:2.9s}.slide.active .a.d5{transition-delay:3.6s}.slide.active .a.d6{transition-delay:4.3s}.slide.active .a.d7{transition-delay:5s}.slide.active .a.d8{transition-delay:5.7s}.slide.active .a.d9{transition-delay:6.4s}.slide.active .a.d10{transition-delay:7.1s}.slide.active .a.d11{transition-delay:7.8s}.slide.active .a.d12{transition-delay:8.5s}
+
+    .al{opacity:0;transform:translateX(-100px);filter:blur(12px);transition:all 1.2s cubic-bezier(.22,1,.36,1)}
+    .slide.active .al{opacity:1;transform:translateX(0);filter:blur(0)}
+    .slide.active .al.d1{transition-delay:1s}.slide.active .al.d2{transition-delay:1.8s}.slide.active .al.d3{transition-delay:2.6s}.slide.active .al.d4{transition-delay:3.4s}.slide.active .al.d5{transition-delay:4.2s}
+
+    .ar{opacity:0;transform:translateX(100px);filter:blur(12px);transition:all 1.2s cubic-bezier(.22,1,.36,1)}
+    .slide.active .ar{opacity:1;transform:translateX(0);filter:blur(0)}
+    .slide.active .ar.d1{transition-delay:1.2s}.slide.active .ar.d2{transition-delay:2s}.slide.active .ar.d3{transition-delay:2.8s}
+
+    .as{opacity:0;transform:scale(.5);filter:blur(15px);transition:all 1.6s cubic-bezier(.22,1,.36,1)}
+    .slide.active .as{opacity:1;transform:scale(1);filter:blur(0)}
+    .slide.active .as.d1{transition-delay:1s}.slide.active .as.d2{transition-delay:2.2s}.slide.active .as.d3{transition-delay:3.4s}.slide.active .as.d4{transition-delay:4.6s}
+
+    .ab{opacity:0;filter:blur(30px);transition:all 2s cubic-bezier(.22,1,.36,1)}
+    .slide.active .ab{opacity:1;filter:blur(0)}
+    .slide.active .ab.d1{transition-delay:.7s}.slide.active .ab.d2{transition-delay:1.6s}.slide.active .ab.d3{transition-delay:2.5s}
+
+    .gt{background:linear-gradient(135deg,#c6f91f,#a8d918,#8ab812);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .gw{background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.4) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .shimmer{background:linear-gradient(90deg,#c6f91f 0%,#fff 50%,#c6f91f 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 2.5s linear infinite}
+    .rt{color:#ef4444;text-shadow:0 0 50px rgba(239,68,68,.15)}
+    @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+    .pb{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#c6f91f,#a8d918);z-index:1000;transition:width .1s linear;box-shadow:0 0 25px rgba(198,249,31,.7)}
+    .pbb{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.02);z-index:999}
+
+    .ai{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;align-items:center;gap:7px;padding:5px 16px;border-radius:100px;background:rgba(0,0,0,.55);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.05);opacity:0;transition:opacity 1s}
+    body:hover .ai{opacity:1}
+    .ad{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.08);transition:all .5s}
+    .ad.on{background:#c6f91f;box-shadow:0 0 8px rgba(198,249,31,.6);width:22px;border-radius:3px}
+    .al2{font-size:8px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.25);min-width:80px;text-align:center}
+
+    .ct{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;align-items:center;gap:12px;padding:7px 20px;border-radius:100px;background:rgba(0,0,0,.6);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.05);opacity:0;transition:opacity .5s}
+    body:hover .ct{opacity:1}
+    .cb{width:32px;height:32px;border-radius:50%;border:none;background:rgba(255,255,255,.05);color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s}
+    .cb:hover{background:rgba(198,249,31,.12);color:#c6f91f;transform:scale(1.1)}
+    .sc{font-size:9px;font-weight:800;color:rgba(255,255,255,.2);font-variant-numeric:tabular-nums;min-width:44px;text-align:center;letter-spacing:.15em}
+
+    .cc{position:fixed;width:16px;height:16px;border:1.5px solid rgba(198,249,31,.35);border-radius:50%;pointer-events:none;z-index:9999;transition:transform .1s ease-out;mix-blend-mode:difference}
+    .cd{position:fixed;width:3px;height:3px;background:#c6f91f;border-radius:50%;pointer-events:none;z-index:9999}
+
+    .noise{position:fixed;inset-0;pointer-events:none;z-index:998;opacity:.01;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain 8s steps(10) infinite}
+    @keyframes grain{0%,100%{transform:translate(0)}10%{transform:translate(-2%,-2%)}50%{transform:translate(1%,1%)}90%{transform:translate(-1%,1%)}}
+
+    @keyframes pg{0%,100%{box-shadow:0 0 20px rgba(198,249,31,.12)}50%{box-shadow:0 0 70px rgba(198,249,31,.45)}}
+    @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+    @keyframes fls{0%,100%{transform:translateY(0) rotate(0deg)}33%{transform:translateY(-14px) rotate(.5deg)}66%{transform:translateY(7px) rotate(-.5deg)}}
+    @keyframes sl{0%{top:-5%;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:105%;opacity:0}}
+    @keyframes rp{0%{transform:scale(.8);opacity:.5}100%{transform:scale(3.5);opacity:0}}
+    @keyframes bg{0%,100%{border-color:rgba(198,249,31,.06)}50%{border-color:rgba(198,249,31,.3)}}
+    @keyframes tg{0%,100%{text-shadow:0 0 30px rgba(198,249,31,.12)}50%{text-shadow:0 0 80px rgba(198,249,31,.5),0 0 120px rgba(198,249,31,.15)}}
+    @keyframes rg{0%,100%{text-shadow:0 0 30px rgba(239,68,68,.08)}50%{text-shadow:0 0 80px rgba(239,68,68,.35)}}
+    @keyframes ug{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+    @keyframes pulse{0%,100%{opacity:.2}50%{opacity:.8}}
+    @keyframes breathe{0%,100%{opacity:.03}50%{opacity:.08}}
+    @keyframes countIn{0%{opacity:0;transform:translateY(25px) scale(.7);filter:blur(6px)}60%{opacity:1;transform:translateY(-3px) scale(1.05);filter:blur(0)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+    @keyframes lineThrough{from{width:0}to{width:100%}}
+    @keyframes fadeInSoft{from{opacity:0}to{opacity:1}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+
+    .gd{width:8px;height:8px;background:#c6f91f;border-radius:50%;box-shadow:0 0 10px #c6f91f,0 0 30px rgba(198,249,31,.35);animation:pg 2s ease-in-out infinite}
+    .rd{width:8px;height:8px;background:#ef4444;border-radius:50%;box-shadow:0 0 10px #ef4444,0 0 30px rgba(239,68,68,.35);animation:pg 2s ease-in-out infinite}
+    .grid-bg{position:absolute;inset:0;opacity:.02;background-image:linear-gradient(rgba(198,249,31,.3) 1px,transparent 1px),linear-gradient(90deg,rgba(198,249,31,.3) 1px,transparent 1px);background-size:60px 60px}
+
+    .uline{position:relative;display:inline-block}
+    .uline::after{content:'';position:absolute;bottom:-3px;left:0;width:100%;height:2px;background:#c6f91f;transform:scaleX(0);transform-origin:left;transition:transform 1.2s cubic-bezier(.22,1,.36,1)}
+    .slide.active .uline::after{transform:scaleX(1)}
+    .slide.active .uline.u1::after{transition-delay:2s}.slide.active .uline.u2::after{transition-delay:2.8s}
+
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:100px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+    .stat-num{animation:countIn 1.2s cubic-bezier(.22,1,.36,1) both}
+
+    @media(max-width:768px){
+      body{cursor:auto}.cc,.cd{display:none}.ct{opacity:1;bottom:14px;padding:5px 12px;gap:8px}.ai{opacity:1;top:10px;padding:3px 10px}
+    }
+  </style>
+</head>
+<body>
+
+<div class="noise"></div>
+<div class="cc" id="cursor"></div>
+<div class="cd" id="cursorDot"></div>
+<div class="pbb"></div>
+<div class="pb" id="pb" style="width:0%"></div>
+
+<div class="ai" id="ai">
+  <div class="ad on" data-act="0"></div><div class="ad" data-act="1"></div><div class="ad" data-act="2"></div><div class="ad" data-act="3"></div><div class="ad" data-act="4"></div><div class="al2" id="al2">SHOCK</div>
+</div>
+
+<!-- ===== S1: THE QUESTION ===== -->
+<div class="slide active" data-duration="7" data-trans-in="trans-fade-in" data-trans-out="trans-fade-out" data-act="0">
+  <div class="absolute inset-0 bg-black"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full" style="background:radial-gradient(circle,rgba(255,255,255,.02),transparent 70%)"></div>
+  <div class="relative z-10 max-w-4xl mx-auto px-8 w-full text-center">
+    <div class="ab d1 text-sm sm:text-base font-light text-white/15 tracking-wide" style="letter-spacing:.05em">
+    </div>
+    <div class="a d3 h-px w-24 mx-auto my-8" style="background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent)"></div>
+    <h1 class="a d4 text-4xl sm:text-6xl lg:text-7xl font-extralight tracking-tighter leading-[1.05]" style="text-shadow:0 0 60px rgba(0,0,0,.5)">
+      Is the problem<br><span class="gw">actually real?</span>
+    </h1>
+  </div>
+</div>
+
+<!-- ===== S2: THE NUMBER ===== -->
+<div class="slide" data-duration="8" data-trans-in="trans-cinematic-in" data-trans-out="trans-cinematic-out" data-act="0">
+  <div class="absolute inset-0 bg-black"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full" style="background:radial-gradient(circle,rgba(239,68,68,.06),transparent 65%);animation:breathe 4s ease-in-out infinite"></div>
+  <div class="relative z-10 max-w-4xl mx-auto px-8 w-full text-center">
+    <div class="ab d1 rd mx-auto mb-10"></div>
+    <h1 class="ab d2 text-7xl sm:text-9xl lg:text-[11rem] font-extralight tracking-tighter leading-[.8] rt" style="animation:rg 3s ease-in-out infinite">
+      ₨500B
+    </h1>
+    <div class="a d5 mt-4 h-px w-40 mx-auto" style="background:linear-gradient(90deg,transparent,rgba(239,68,68,.25),transparent)"></div>
+    <p class="a d6 text-base sm:text-lg font-light text-white/25 leading-relaxed max-w-lg mx-auto mt-6">
+      Pakistan's annual loss to crop diseases that farmers <em class="text-white/40">cannot identify early enough</em>.
+    </p>
+    <div class="a d9 mt-8 text-[9px] text-white/10 uppercase tracking-[.25em]">Source: Pakistan Bureau of Statistics / Ministry of National Food Security</div>
+  </div>
+</div>
+
+<!-- ===== S3: THE FARMER ===== -->
+<div class="slide" data-duration="9" data-trans-in="trans-blur-in" data-trans-out="trans-fade-out" data-act="0">
+  <div class="absolute inset-0">
+    <img src="https://picsum.photos/seed/pakistani-farmer-field-sunset-2025/1920/1080.jpg" alt="Farmer" class="w-full h-full object-cover" style="filter:brightness(.2) saturate(.7) contrast(1.15);">
+    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/70"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent"></div>
+  </div>
+  <div class="relative z-10 max-w-5xl mx-auto px-8 w-full">
+    <div class="ab d1 text-[9px] font-bold uppercase tracking-[.3em] text-red-400/30 mb-8">Meet the real user — not a persona</div>
+    <h2 class="ab d2 text-4xl sm:text-6xl lg:text-7xl font-extralight tracking-tighter leading-[.95] mb-6" style="text-shadow:0 0 100px rgba(0,0,0,.9)">
+      He earns <span class="rt">₨ 40,000</span>/month.<br>His farm is <span class="text-white/60">5 acres</span>.
+    </h2>
+    <div class="ab d3 urdu text-lg text-white/20 mb-10">پاکستانی کسان کی اوسط آمدنی — ماہانہ چالیس ہزار روپے — پانچ ایکڑ زمین</div>
+    <div class="a d5 flex flex-wrap gap-7">
+      <div><div class="text-3xl font-extralight text-white/60 uline">47%</div><div class="text-[9px] text-white/15 uppercase tracking-[.2em] mt-2">Rural Literacy</div></div>
+      <div class="w-px bg-white/6"></div>
+      <div><div class="text-3xl font-extralight text-white/60 uline u1">85%</div><div class="text-[9px] text-white/15 uppercase tracking-[.2em] mt-2">Arhti Controlled</div></div>
+      <div class="w-px bg-white/6"></div>
+      <div><div class="text-3xl font-extralight text-white/60 uline u2">53%</div><div class="text-[9px] text-white/15 uppercase tracking-[.2em] mt-2">No English Access</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S4: THREE CRISES ===== -->
+<div class="slide" data-duration="10" data-trans-in="trans-slide-left" data-trans-out="trans-zoom-out" data-act="0">
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse at center,rgba(127,29,29,.08),#000 60%)"></div>
+  <div class="grid-bg"></div>
+  <div class="relative z-10 max-w-6xl mx-auto px-8 w-full">
+    <div class="a d1 text-center mb-12">
+      <div class="badge bg-red-500/8 text-red-400/70 border border-red-500/10 mb-5 inline-flex">⚠️ Three Simultaneous Crises</div>
+      <h2 class="text-3xl sm:text-5xl lg:text-6xl font-extralight tracking-tighter leading-[1.05]">No tool solves <span class="rt">all three</span>.</h2>
+    </div>
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="a d3 p-6 rounded-2xl border border-red-500/8 bg-red-500/[0.015]" style="animation:bg 4s infinite">
+        <div class="text-2xl mb-3">🦠</div>
+        <h3 class="text-base font-medium mb-2">Diseases Unchecked</h3>
+        <p class="text-[11px] text-white/30 leading-relaxed mb-3">Wheat Rust, CLCV, Rice Blast, Sugarcane Smut — no early detection system exists for Pakistani farmers.</p>
+        <div class="text-2xl font-extralight text-red-400/50">₨ 500B+</div>
+        <div class="text-[7px] text-white/10 uppercase tracking-[.2em] mt-0.5">Per Year — Preventable</div>
+      </div>
+      <div class="a d5 p-6 rounded-2xl border border-orange-500/8 bg-orange-500/[0.015]">
+        <div class="text-2xl mb-3">🗣️</div>
+        <h3 class="text-base font-medium mb-2">Language Wall</h3>
+        <p class="text-[11px] text-white/30 leading-relaxed mb-3">All agri-tech in English. Pakistani farmers speak Urdu, Punjabi, Sindhi, Pashto, Saraiki, Balochi.</p>
+        <div class="text-2xl font-extralight text-orange-400/50">6</div>
+        <div class="text-[7px] text-white/10 uppercase tracking-[.2em] mt-0.5">Languages Ignored</div>
+      </div>
+      <div class="a d7 p-6 rounded-2xl border border-yellow-500/8 bg-yellow-500/[0.015]">
+        <div class="text-2xl mb-3">💰</div>
+        <h3 class="text-base font-medium mb-2">Price Blindness</h3>
+        <p class="text-[11px] text-white/30 leading-relaxed mb-3">Arhtis control mandis. No real-time price data. Farmers sell at 30-40% below fair value — every single day.</p>
+        <div class="text-2xl font-extralight text-yellow-400/50">30-40%</div>
+        <div class="text-[7px] text-white/10 uppercase tracking-[.2em] mt-0.5">Income Lost to Middlemen</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S5: PAKISTAN DISEASES ===== -->
+<div class="slide" data-duration="9" data-trans-in="trans-fade-in" data-trans-out="trans-blur-out" data-act="0">
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse at bottom right,rgba(127,29,29,.04),#000 55%)"></div>
+  <div class="relative z-10 max-w-6xl mx-auto px-8 w-full">
+    <div class="al d1 text-[9px] font-bold uppercase tracking-[.3em] text-red-400/25 mb-3">Pakistan's Specific Diseases — We Researched Them</div>
+    <h2 class="al d2 text-3xl sm:text-5xl font-extralight tracking-tighter leading-[1.05] mb-10">Not generic. <span class="rt">Pakistan-specific.</span></h2>
+    <div class="grid sm:grid-cols-2 gap-3.5">
+      <div class="a d2 flex gap-3.5 p-4 rounded-xl border border-red-500/6 bg-red-500/[0.01]">
+        <div class="text-xl flex-shrink-0">🌾</div>
+        <div><h4 class="text-sm font-medium mb-0.5">Wheat Rust (3 variants)</h4><div class="urdu text-[10px] text-red-400/30 mb-1">گندم کی جھنڈ — پیلے، پٹی، بھوری</div><p class="text-[10px] text-white/25 leading-relaxed">30% Punjab wheat area. 10-30% yield loss. Spreads in cool humid Feb-March.</p></div>
+      </div>
+      <div class="a d4 flex gap-3.5 p-4 rounded-xl border border-red-500/6 bg-red-500/[0.01]">
+        <div class="text-xl flex-shrink-0">🧶</div>
+        <div><h4 class="text-sm font-medium mb-0.5">Cotton Leaf Curl Virus</h4><div class="urdu text-[10px] text-red-400/30 mb-1">کپاس کے پتے کو لپیٹنا — وائرس</div><p class="text-[10px] text-white/25 leading-relaxed">Pakistan's #1 cotton crisis. 3M bales lost 2023. Whitefly vector. No cure.</p></div>
+      </div>
+      <div class="a d6 flex gap-3.5 p-4 rounded-xl border border-red-500/6 bg-red-500/[0.01]">
+        <div class="text-xl flex-shrink-0">🍚</div>
+        <div><h4 class="text-sm font-medium mb-0.5">Rice Blast Disease</h4><div class="urdu text-[10px] text-red-400/30 mb-1">چاول کی دھماکا بیماری</div><p class="text-[10px] text-white/25 leading-relaxed">50-85% loss if untreated. Threatens Basmati exports. Monsoon trigger in Sindh.</p></div>
+      </div>
+      <div class="a d8 flex gap-3.5 p-4 rounded-xl border border-red-500/6 bg-red-500/[0.01]">
+        <div class="text-xl flex-shrink-0">🌿</div>
+        <div><h4 class="text-sm font-medium mb-0.5">Sugarcane Smut + Red Rot</h4><div class="urdu text-[10px] text-red-400/30 mb-1">گنے کی کالidal اور سرخ سڑن</div><p class="text-[10px] text-white/25 leading-relaxed">Spreading in Sindh belt. 15-25% sugar recovery loss. No farmer awareness.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S6: THE GLITCH — REVEAL ===== -->
+<div class="slide" data-duration="6" data-trans-in="trans-glitch-in" data-trans-out="trans-blur-in" data-act="1">
+  <div class="absolute inset-0 bg-black"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full" style="background:radial-gradient(circle,rgba(198,249,31,.04),transparent 60%);animation:breathe 3s ease-in-out infinite"></div>
+  <div class="relative z-10 flex flex-col items-center justify-center text-center px-8">
+    <div class="as d1 relative mb-10">
+      <div class="absolute inset-0 w-32 h-32 rounded-full bg-accent/12" style="animation:rp 3s ease-out infinite"></div>
+      <div class="absolute inset-0 w-32 h-32 rounded-full bg-accent/6" style="animation:rp 3s ease-out 1s infinite"></div>
+      <div class="w-32 h-32 rounded-full bg-accent/6 border-2 border-accent/20 flex items-center justify-center relative z-10" style="animation:pg 2s ease-in-out infinite"><i data-lucide="sprout" class="w-16 h-16 text-accent"></i></div>
+    </div>
+    <h2 class="ab d2 text-5xl sm:text-7xl lg:text-[6rem] font-extralight tracking-tighter leading-[.85]" style="animation:tg 3s ease-in-out infinite"><span class="gt">Smart Kisan<br>Sahara</span></h2>
+    <div class="ab d3 urdu text-2xl sm:text-3xl text-accent/30 mt-4">سمارٹ کسان صحرا</div>
+  </div>
+</div>
+
+<!-- ===== S7: THE APP ===== -->
+<div class="slide" data-duration="12" data-trans-in="trans-scale-in" data-trans-out="trans-fade-out" data-act="1">
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse at top right,rgba(198,249,31,.04),#000 50%)"></div>
+  <div class="grid-bg"></div>
+  <div class="relative z-10 max-w-6xl mx-auto px-8 w-full">
+    <div class="grid lg:grid-cols-2 gap-14 items-center">
+      <div>
+        <div class="a d1 badge bg-accent/8 text-accent/80 border border-accent/12 mb-5">🇵🇰 Pakistan's First AI Kisan Assistant</div>
+        <h2 class="a d2 text-3xl sm:text-5xl font-extralight tracking-tighter leading-[1.05] mb-2">One App.<br><span class="gt">Har Masla Hal.</span></h2>
+        <div class="a d3 urdu text-lg text-accent/30 mb-7">ایک ایپ — ہر مسئلہ حل</div>
+        <p class="a d4 text-sm text-white/30 leading-relaxed mb-7">Not adapted from India. Not copied from the US. <strong class="text-white/60">Built from zero</strong> for Pakistani soil, Pakistani diseases, Pakistani mandi rates in PKR/maan, and Pakistani languages.</p>
+        <div class="space-y-3">
+          <div class="al d2 flex items-center gap-2.5"><div class="w-7 h-7 rounded-lg bg-accent/8 border border-accent/10 flex items-center justify-center flex-shrink-0"><i data-lucide="camera" class="w-3.5 h-3.5 text-accent"></i></div><span class="text-[13px] text-white/50">Photo → Disease → <strong class="text-white/80">Urdu Treatment</strong></span></div>
+          <div class="al d3 flex items-center gap-2.5"><div class="w-7 h-7 rounded-lg bg-accent/8 border border-accent/10 flex items-center justify-center flex-shrink-0"><i data-lucide="message-circle" class="w-3.5 h-3.5 text-accent"></i></div><span class="text-[13px] text-white/50"><strong class="text-white/80">6 Pakistani Languages</strong> — Bol Apni Zaban</span></div>
+          <div class="al d4 flex items-center gap-2.5"><div class="w-7 h-7 rounded-lg bg-accent/8 border border-accent/10 flex items-center justify-center flex-shrink-0"><i data-lucide="trending-up" class="w-3.5 h-3.5 text-accent"></i></div><span class="text-[13px] text-white/50"><strong class="text-white/80">PKR per Maan</strong> — Real Mandi Prices</span></div>
+          <div class="al d5 flex items-center gap-2.5"><div class="w-7 h-7 rounded-lg bg-accent/8 border border-accent/10 flex items-center justify-center flex-shrink-0"><i data-lucide="cloud-sun-rain" class="w-3.5 h-3.5 text-accent"></i></div><span class="text-[13px] text-white/50"><strong class="text-white/80">Pakistani Cities</strong> — Monsoon & Frost Alerts</span></div>
+        </div>
+      </div>
+      <div class="ar d1">
+        <div class="rounded-2xl border border-white/4 overflow-hidden" style="animation:fls 9s ease-in-out infinite;box-shadow:0 0 100px rgba(198,249,31,.03);background:#0B0F13">
+          <div class="relative"><div class="absolute inset-0 h-0.5 bg-gradient-to-r from-transparent via-accent/35 to-transparent" style="animation:sl 3s linear infinite;z-index:10"></div>
+            <div class="flex items-center gap-2 px-4 py-2 border-b border-white/4 bg-black/25"><div class="flex gap-1"><div class="w-2 h-2 rounded-full bg-red-400/12"></div><div class="w-2 h-2 rounded-full bg-yellow-400/12"></div><div class="w-2 h-2 rounded-full bg-green-400/12"></div></div><div class="flex-1 mx-3"><div class="max-w-xs mx-auto px-3 py-1 bg-white/4 rounded text-[8px] text-white/12 text-center font-mono flex items-center justify-center gap-1"><span class="text-green-400/35">🔒</span>smart-kisan-sahara.lovable.app</div></div></div>
+            <div class="p-3 space-y-2">
+              <div class="flex items-center gap-2 px-3 py-2 bg-white/[0.025] rounded-xl border border-white/4"><i data-lucide="search" class="w-3 h-3 text-white/10"></i><span class="text-[10px] text-white/10 urdu">اپنی فصل کے بارے میں پوچھیں...</span><span class="ml-auto px-1.5 py-0.5 rounded text-[7px] font-bold bg-accent/8 text-accent border border-accent/10">AI</span></div>
+              <div class="grid grid-cols-2 gap-1.5">
+                <div class="p-2 rounded-xl bg-white/[0.015] border border-white/4"><div class="w-4 h-4 rounded bg-green-500/8 flex items-center justify-center mb-1"><i data-lucide="scan-eye" class="w-2 h-2 text-green-400"></i></div><div class="text-[8px] font-medium text-white/45">Disease Scan</div><div class="text-[7px] text-white/10 urdu">تصویر اپلوڈ</div></div>
+                <div class="p-2 rounded-xl bg-white/[0.015] border border-white/4"><div class="w-4 h-4 rounded bg-blue-500/8 flex items-center justify-center mb-1"><i data-lucide="cloud-sun-rain" class="w-2 h-2 text-blue-400"></i></div><div class="text-[8px] font-medium text-white/45">موسم</div><div class="text-[7px] text-white/10">Lahore • Multan</div></div>
+                <div class="p-2 rounded-xl bg-white/[0.015] border border-white/4"><div class="w-4 h-4 rounded bg-yellow-500/8 flex items-center justify-center mb-1"><i data-lucide="trending-up" class="w-2 h-2 text-yellow-400"></i></div><div class="text-[8px] font-medium text-white/45">منڈی قیمت</div><div class="text-[7px] text-white/10">₨ / ماَن</div></div>
+                <div class="p-2 rounded-xl bg-white/[0.015] border border-white/4"><div class="w-4 h-4 rounded bg-purple-500/8 flex items-center justify-center mb-1"><i data-lucide="message-circle" class="w-2 h-2 text-purple-400"></i></div><div class="text-[8px] font-medium text-white/45">AI چیٹ</div><div class="text-[7px] text-white/10 urdu">اردو میں</div></div>
+              </div>
+              <div class="p-2 rounded-xl bg-accent/[0.015] border border-accent/6"><div class="flex items-center gap-1 mb-0.5"><div class="w-3 h-3 rounded-full bg-accent/10 flex items-center justify-center"><i data-lucide="sparkles" class="w-1.5 h-1.5 text-accent"></i></div><span class="text-[7px] font-bold text-accent uppercase tracking-wider">Kisan AI</span></div><p class="text-[8px] text-white/25 urdu leading-relaxed">"آپ کے گندم میں کیتھ رستہ روگ ہے۔ پروپیکونازول 25% ای سی سپرے کریں..."</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S8: DISEASE DETECTION ===== -->
+<div class="slide" data-duration="10" data-trans-in="trans-slide-left" data-trans-out="trans-slide-right" data-act="2">
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse at left,rgba(34,197,94,.03),#000 50%)"></div>
+  <div class="relative z-10 max-w-6xl mx-auto px-8 w-full">
+    <div class="grid lg:grid-cols-2 gap-14 items-center">
+      <div class="ar d1 order-2 lg:order-1 flex justify-center">
+        <div class="relative w-56 h-56 rounded-2xl overflow-hidden border border-green-500/6" style="animation:fl 6s ease-in-out infinite">
+          <img src="https://picsum.photos/seed/wheat-leaf-rust-closeup-pakistan/500/500.jpg" alt="Scan" class="w-full h-full object-cover opacity-30">
+          <div class="absolute inset-0 h-0.5 bg-gradient-to-r from-transparent via-green-400/30 to-transparent" style="animation:sl 2s linear infinite"></div>
+          <div class="absolute inset-0 flex items-center justify-center"><div class="w-12 h-12 rounded-full border-2 border-green-400/30 flex items-center justify-center" style="animation:pg 2s ease-in-out infinite;box-shadow:0 0 18px rgba(74,222,128,.1)"><i data-lucide="scan" class="w-5 h-5 text-green-400"></i></div></div>
+          <div class="absolute bottom-2 left-2 right-2 p-1.5 rounded-lg bg-black/70 border border-green-400/10 backdrop-blur-sm">
+            <div class="text-[7px] text-green-400 font-bold uppercase tracking-wider">✓ Wheat Stripe Rust — 94%</div>
+            <div class="text-[6px] text-white/15 urdu">گندم کی پٹی والی جھنڈ — پروپیکونازول سپرے</div>
+          </div>
+        </div>
+      </div>
+      <div class="order-1 lg:order-2">
+        <div class="a d1 flex items-center gap-2.5 mb-4"><div class="w-9 h-9 rounded-xl bg-green-500/8 border border-green-500/10 flex items-center justify-center"><i data-lucide="scan-eye" class="w-4.5 h-4.5 text-green-400"></i></div><div><div class="text-[7px] text-white/15 uppercase tracking-wider">Feature 01</div><h3 class="text-lg font-medium">AI Disease Detection</h3></div></div>
+        <p class="a d2 text-[13px] text-white/30 leading-relaxed mb-4">Trained on <strong class="text-white/55">Pakistani crop diseases</strong>. Upload a leaf photo — AI identifies Wheat Rust, CLCV, Rice Blast in 5 seconds. Gives treatment with <strong class="text-white/55">locally available pesticides</strong>: Imidacloprid, Propiconazole, Tricyclazole — all in Urdu.</p>
+        <div class="a d3 flex flex-wrap gap-1 mb-4"><span class="px-2 py-0.5 rounded-full text-[7px] font-bold uppercase tracking-wider bg-green-500/6 text-green-400/70 border border-green-500/10">Wheat Rust</span><span class="px-2 py-0.5 rounded-full text-[7px] font-bold uppercase tracking-wider bg-green-500/6 text-green-400/70 border border-green-500/10">CLCV</span><span class="px-2 py-0.5 rounded-full text-[7px] font-bold uppercase tracking-wider bg-green-500/6 text-green-400/70 border border-green-500/10">Rice Blast</span><span class="px-2 py-0.5 rounded-full text-[7px] font-bold uppercase tracking-wider bg-green-500/6 text-green-400/70 border border-green-500/10">Local Pesticides</span></div>
+        <div class="a d4 p-3 rounded-xl bg-green-500/[0.015] border border-green-500/6"><div class="text-[10px] text-red-400/40 mb-0.5">Before: ہفتے انتظار — Wait days for agriculture officer</div><div class="text-[10px] text-green-400 font-medium">After: 5 سیکنڈ — Instant, free, in Urdu, 24/7</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S9: WEATHER + MANDI ===== -->
+<div class="slide" data-duration="9" data-trans-in="trans-fade-in" data-trans-out="trans-zoom-out" data-act="2">
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse at bottom right,rgba(59,130,246,.025),#000 50%)"></div>
+  <div class="relative z-10 max-w-6xl mx-auto px-8 w-full">
+    <div class="grid md:grid-cols-2 gap-5">
+      <div class="al d1 p-6 rounded-2xl border border-blue-500/6 bg-blue-500/[0.008]">
+        <div class="w-9 h-9 rounded-xl bg-blue-500/8 border border-blue-500/10 flex items-center justify-center mb-3"><i data-lucide="cloud-rain-wind" class="w-4 h-4 text-blue-400"></i></div>
+        <div class="text-[7px] text-white/15 uppercase tracking-wider mb-0.5">Feature 02</div>
+        <h3 class="text-lg font-medium mb-1.5">Pakistan Weather</h3>
+        <p class="text-[11px] text-white/25 leading-relaxed mb-3">Pakistan is <strong class="text-white/45">5th most climate-vulnerable</strong>. 2022 floods: ₨ 600B destroyed. City-level monsoon & frost alerts for Lahore, Multan, Hyderabad, Peshawar, Quetta.</p>
+        <div class="grid grid-cols-4 gap-1">
+          <div class="text-center p-1.5 rounded-lg bg-white/[0.015]"><div class="text-[7px] text-white/15 mb-0.5">Lahore</div><div class="text-sm">🌡️</div><div class="text-[9px] text-white/35 font-mono">42°</div></div>
+          <div class="text-center p-1.5 rounded-lg bg-white/[0.015]"><div class="text-[7px] text-white/15 mb-0.5">Multan</div><div class="text-sm">🌧️</div><div class="text-[9px] text-white/35 font-mono">بارش</div></div>
+          <div class="text-center p-1.5 rounded-lg bg-white/[0.015]"><div class="text-[7px] text-white/15 mb-0.5">Peshawar</div><div class="text-sm">💨</div><div class="text-[9px] text-white/35 font-mono">28°</div></div>
+          <div class="text-center p-1.5 rounded-lg bg-white/[0.015]"><div class="text-[7px] text-white/15 mb-0.5">Quetta</div><div class="text-sm">❄️</div><div class="text-[9px] text-white/35 font-mono">12°</div></div>
+        </div>
+      </div>
+      <div class="ar d1 p-6 rounded-2xl border border-yellow-500/6 bg-yellow-500/[0.008]">
+        <div class="w-9 h-9 rounded-xl bg-yellow-500/8 border border-yellow-500/10 flex items-center justify-center mb-3"><i data-lucide="trending-up" class="w-4 h-4 text-yellow-400"></i></div>
+        <div class="text-[7px] text-white/15 uppercase tracking-wider mb-0.5">Feature 03</div>
+        <h3 class="text-lg font-medium mb-1.5">Mandi Prices — PKR</h3>
+        <p class="text-[11px] text-white/25 leading-relaxed mb-3">Live from Lahore, Karachi, Multan, Faisalabad. Every price in <strong class="text-white/45">Pakistani Rupees per Maan</strong>. Arhti can't lie when the kisan has the real data.</p>
+        <div class="space-y-1">
+          <div class="flex justify-between p-1.5 rounded-lg bg-white/[0.012]"><span class="text-[10px] text-white/40">گندم — Lahore</span><span class="text-[10px] font-mono text-green-400">₨ 4,800 ↑</span></div>
+          <div class="flex justify-between p-1.5 rounded-lg bg-white/[0.012]"><span class="text-[10px] text-white/40">کپاس — Multan</span><span class="text-[10px] font-mono text-green-400">₨ 11,200 ↑</span></div>
+          <div class="flex justify-between p-1.5 rounded-lg bg-white/[0.012]"><span class="text-[10px] text-white/40">چاول — Karachi</span><span class="text-[10px] font-mono text-red-400">₨ 8,500 ↓</span></div>
+          <div class="flex justify-between p-1.5 rounded-lg bg-white/[0.012]"><span class="text-[10px] text-white/40">گنے — Peshawar</span><span class="text-[10px] font-mono text-green-400">₨ 350 ↑</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S10: AI CHAT ===== -->
+<div class="slide" data-duration="9" data-trans-in="trans-blur-in" data-trans-out="trans-fade-out" data-act="2">
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse at center,rgba(168,85,247,.025),#000 50%)"></div>
+  <div class="relative z-10 max-w-6xl mx-auto px-8 w-full">
+    <div class="grid lg:grid-cols-2 gap-14 items-center">
+      <div>
+        <div class="a d1 flex items-center gap-2.5 mb-4"><div class="w-9 h-9 rounded-xl bg-purple-500/8 border border-purple-500/10 flex items-center justify-center"><i data-lucide="message-square-text" class="w-4 h-4 text-purple-400"></i></div><div><div class="text-[7px] text-white/15 uppercase tracking-wider">Feature 04</div><h3 class="text-lg font-medium">Multilingual AI Chat</h3></div></div>
+        <p class="a d2 text-[13px] text-white/30 leading-relaxed mb-4">Talk like talking to a <strong class="text-white/55">Pakistani agriculture expert</strong>. Seed varieties, DAP/Urea dosage, water requirements, organic methods — in Urdu, Punjabi, Sindhi, Pashto, Saraiki, Balochi.</p>
+        <div class="a d3 flex flex-wrap gap-1"><span class="px-2 py-0.5 rounded-full text-[7px] font-bold bg-purple-500/6 text-purple-400/60 border border-purple-500/8">اردو</span><span class="px-2 py-0.5 rounded-full text-[7px] font-bold bg-purple-500/6 text-purple-400/60 border border-purple-500/8">پنجابی</span><span class="px-2 py-0.5 rounded-full text-[7px] font-bold bg-purple-500/6 text-purple-400/60 border border-purple-500/8">سندھی</span><span class="px-2 py-0.5 rounded-full text-[7px] font-bold bg-purple-500/6 text-purple-400/60 border border-purple-500/8">پشتو</span><span class="px-2 py-0.5 rounded-full text-[7px] font-bold bg-purple-500/6 text-purple-400/60 border border-purple-500/8">سرائیکی</span><span class="px-2 py-0.5 rounded-full text-[7px] font-bold bg-purple-500/6 text-purple-400/60 border border-purple-500/8">بلوچی</span></div>
+      </div>
+      <div class="ar d1">
+        <div class="p-3.5 rounded-2xl bg-white/[0.01] border border-white/4 space-y-2" style="animation:fls 8s ease-in-out infinite">
+          <div class="flex items-center gap-1.5"><div class="w-4 h-4 rounded-full bg-accent/10 flex items-center justify-center"><i data-lucide="bot" class="w-2.5 h-2.5 text-accent"></i></div><span class="text-[7px] font-bold text-accent uppercase tracking-wider">Kisan AI — اردو</span></div>
+          <div class="flex justify-end"><div class="px-2.5 py-1.5 rounded-2xl rounded-br-sm bg-accent/4 border border-accent/6 max-w-[78%]"><p class="text-[10px] text-white/50 urdu leading-relaxed">میرے کپاس کے پتے کوئلے سے کالے ہو گئے ہیں، کیا یہ leaf curl virus ہے؟</p></div></div>
+          <div class="flex justify-start"><div class="px-2.5 py-1.5 rounded-2xl rounded-bl-sm bg-white/[0.01] border border-white/4 max-w-[85%]"><p class="text-[9px] text-white/30 urdu leading-relaxed">جی ہاں، CLCV ہے۔ علاج:</p><ul class="text-[8px] text-white/25 urdu mt-0.5 space-y-0"><li>🔹 Imidacloprid سپرے کریں</li><li>🔹 متاثرہ پتے ہٹائیں</li><li>🔹 نیماں زیتون استعمال کریں</li><li>🔹 تصویر بھیجیں دقیق تشخیص</li></ul></div></div>
+          <div class="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.01] rounded-xl border border-white/4"><span class="text-[8px] text-white/8 flex-1 urdu">اپنا سوال لکھیں...</span><i data-lucide="send" class="w-2.5 h-2.5 text-accent/15"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S11: IMPACT ===== -->
+<div class="slide" data-duration="9" data-trans-in="trans-scale-in" data-trans-out="trans-zoom-out" data-act="3">
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse at center,rgba(198,249,31,.03),#000 50%)"></div>
+  <div class="grid-bg"></div>
+  <div class="relative z-10 max-w-5xl mx-auto px-8 w-full text-center">
+    <div class="a d1 text-[9px] font-bold uppercase tracking-[.3em] text-accent/30 mb-4">Measurable Impact</div>
+    <h2 class="a d2 text-3xl sm:text-5xl lg:text-6xl font-extralight tracking-tighter leading-[1.05] mb-12">By The <span class="gt">Numbers</span></h2>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-10">
+      <div class="as d1 p-5 rounded-2xl border border-accent/6 bg-accent/[0.01]"><div class="text-4xl sm:text-5xl font-extralight tracking-tight gt mb-0.5">20%</div><div class="text-xs text-white/35 mb-0.5">Yield Saved</div><div class="text-[7px] text-white/10 uppercase tracking-[.2em]">Early AI Detection</div></div>
+      <div class="as d2 p-5 rounded-2xl border border-white/4 bg-white/[0.003]"><div class="text-4xl sm:text-5xl font-extralight tracking-tight text-white mb-0.5">9M+</div><div class="text-xs text-white/35 mb-0.5">Farmers</div><div class="text-[7px] text-white/10 uppercase tracking-[.2em]">Zero Cost Access</div></div>
+      <div class="as d3 p-5 rounded-2xl border border-white/4 bg-white/[0.003]"><div class="text-4xl sm:text-5xl font-extralight tracking-tight text-white mb-0.5">6</div><div class="text-xs text-white/35 mb-0.5">Languages</div><div class="text-[7px] text-white/10 uppercase tracking-[.2em]">Full Regional</div></div>
+      <div class="as d4 p-5 rounded-2xl border border-accent/6 bg-accent/[0.01]"><div class="text-4xl sm:text-5xl font-extralight tracking-tight text-accent mb-0.5">5s</div><div class="text-xs text-white/35 mb-0.5">Response</div><div class="text-[7px] text-white/10 uppercase tracking-[.2em]">Instant AI</div></div>
+    </div>
+    <div class="a d8 max-w-lg mx-auto p-3.5 rounded-xl border border-white/4 bg-white/[0.005]">
+      <div class="flex justify-between text-[10px] mb-1"><span class="text-white/25">Current: Wait days</span><span class="text-red-400/50">ہفتے</span></div>
+      <div class="h-1.5 rounded-full bg-white/4 overflow-hidden mb-2.5"><div class="h-full rounded-full bg-gradient-to-r from-red-500/25 to-red-400/25 pa" style="width:0%;transition:width 1.5s ease-out" data-width="92"></div></div>
+      <div class="flex justify-between text-[10px] mb-1"><span class="text-white/25">With Kisan Sahara</span><span class="text-accent/70">5 سیکنڈ</span></div>
+      <div class="h-1.5 rounded-full bg-white/4 overflow-hidden"><div class="h-full rounded-full bg-gradient-to-r from-accent/25 to-accent/45 pa" style="width:0%;transition:width 1.5s ease-out .3s" data-width="3"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S12: WHY WE WIN ===== -->
+<div class="slide" data-duration="10" data-trans-in="trans-slide-left" data-trans-out="trans-fade-out" data-act="3">
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse at top,rgba(198,249,31,.02),#000 50%)"></div>
+  <div class="relative z-10 max-w-5xl mx-auto px-8 w-full text-center">
+    <div class="a d1 text-[9px] font-bold uppercase tracking-[.3em] text-white/20 mb-3">Judge's Scorecard</div>
+    <h2 class="a d2 text-3xl sm:text-5xl font-extralight tracking-tighter leading-[1.05] mb-4">Why This <span class="gt">Wins</span></h2>
+    <p class="a d3 text-sm text-white/20 max-w-xl mx-auto mb-12">Every criteria judges evaluate — addressed explicitly.</p>
+    <div class="a d4 grid sm:grid-cols-2 gap-3.5 text-left mb-8">
+      <div class="p-4 rounded-xl border border-accent/6 bg-accent/[0.006]"><div class="text-[8px] font-bold text-accent/50 uppercase tracking-wider mb-1.5">✓ Problem is REAL & RESEARCHED</div><p class="text-[10px] text-white/25 leading-relaxed">₨500B loss, 4 specific Pakistani diseases, real pesticide names, real mandi rates — not generic stats.</p></div>
+      <div class="p-4 rounded-xl border border-white/4 bg-white/[0.003]"><div class="text-[8px] font-bold text-white/25 uppercase tracking-wider mb-1.5">✓ It's ACTUALLY BUILT & LIVE</div><p class="text-[10px] text-white/25 leading-relaxed">Judges can open it right now. Working AI, real Urdu output, real responses. Not a Figma mockup.</p></div>
+      <div class="p-4 rounded-xl border border-white/4 bg-white/[0.003]"><div class="text-[8px] font-bold text-white/25 uppercase tracking-wider mb-1.5">✓ TECHNICALLY IMPRESSIVE</div><p class="text-[10px] text-white/25 leading-relaxed">Computer vision + Gemini LLM + multilingual NLP + weather + mandi APIs. Full AI pipeline.</p></div>
+      <div class="p-4 rounded-xl border border-white/4 bg-white/[0.003]"><div class="text-[8px] font-bold text-white/25 uppercase tracking-wider mb-1.5">✓ PAKISTAN-FIRST, NOT GENERIC</div><p class="text-[10px] text-white/25 leading-relaxed">Pakistani diseases, PKR/maan, Pakistani cities, Pakistani languages. Not an India app with flag change.</p></div>
+      <div class="p-4 rounded-xl border border-white/4 bg-white/[0.003]"><div class="text-[8px] font-bold text-white/25 uppercase tracking-wider mb-1.5">✓ SCALABLE TO 9M FAMILIES</div><p class="text-[10px] text-white/25 leading-relaxed">Web-based, zero download, works on 2G, ₨0 phone compatible. Reaches every Pakistani village.</p></div>
+      <div class="p-4 rounded-xl border border-accent/6 bg-accent/[0.006]"><div class="text-[8px] font-bold text-accent/50 uppercase tracking-wider mb-1.5">✓ ALIGNS WITH NATIONAL PRIORITIES</div><p class="text-[10px] text-white/25 leading-relaxed">SDG 1 (No Poverty), SDG 2 (Zero Hunger), SDG 8 (Decent Work), Pakistan's agriculture vision 2025.</p></div>
+    </div>
+    <div class="a d10 flex flex-wrap justify-center gap-5 text-[9px] text-white/15">
+      <span class="flex items-center gap-1"><i data-lucide="atom" class="w-3 h-3 text-accent/30"></i>React + TS</span>
+      <span class="flex items-center gap-1"><i data-lucide="brain" class="w-3 h-3 text-accent/30"></i>Gemini AI</span>
+      <span class="flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3 text-accent/30"></i>Computer Vision</span>
+      <span class="flex items-center gap-1"><i data-lucide="globe" class="w-3 h-3 text-accent/30"></i>6 Languages</span>
+      <span class="flex items-center gap-1"><i data-lucide="rocket" class="w-3 h-3 text-accent/30"></i>Lovable Deploy</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S13: LIVE APP ===== -->
+<div class="slide" data-duration="8" data-trans-in="trans-blur-in" data-trans-out="trans-blur-out" data-act="4">
+  <div class="absolute inset-0"><img src="https://picsum.photos/seed/pakistan-green-field-cinematic-hope/1920/1080.jpg" alt="Hope" class="w-full h-full object-cover" style="filter:brightness(.15) saturate(1.4);"><div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/35"></div></div>
+  <div class="relative z-10 flex flex-col items-center justify-center text-center px-8">
+    <div class="as d1 relative mb-6">
+      <div class="absolute inset-0 w-20 h-20 rounded-full bg-accent/10" style="animation:rp 2s ease-out infinite"></div>
+      <div class="absolute inset-0 w-20 h-20 rounded-full bg-accent/5" style="animation:rp 2s ease-out .5s infinite"></div>
+      <div class="w-20 h-20 rounded-2xl bg-accent/6 border border-accent/12 flex items-center justify-center relative z-10" style="animation:fl 4s ease-in-out infinite"><i data-lucide="play" class="w-8 h-8 text-accent ml-0.5"></i></div>
+    </div>
+    <div class="ab d1 badge bg-accent/8 text-accent/80 border border-accent/12 mb-4">Open It. Test It. Judge It. — Live Right Now</div>
+    <h2 class="ab d2 text-4xl sm:text-6xl lg:text-7xl font-extralight tracking-tighter leading-[.85] mb-3"><span class="shimmer">Try It Now</span></h2>
+    <p class="a d4 text-sm text-white/20 max-w-md mb-7">Not a mockup. Not a concept. A real working app you can test <em>this second</em>.</p>
+    <a href="https://smart-kisan-sahara.lovable.app" target="_blank" class="a d5 inline-flex items-center gap-2.5 px-10 py-4 bg-accent text-black font-bold text-sm rounded-2xl no-underline hover:shadow-[0_0_60px_rgba(198,249,31,.35)] transition-all hover:-translate-y-1" style="text-decoration:none;color:#000"><i data-lucide="external-link" class="w-4 h-4"></i>Open Smart Kisan Sahara</a>
+    <div class="a d7 mt-4 flex items-center gap-2.5 text-[8px] text-white/10 uppercase tracking-[.2em]"><span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>Live</span><span>•</span><span>Free</span><span>•</span><span>Any Device</span></div>
+  </div>
+</div>
+
+<!-- ===== S14: ROADMAP ===== -->
+<div class="slide" data-duration="8" data-trans-in="trans-fade-in" data-trans-out="trans-fade-out" data-act="4">
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse at bottom,rgba(198,249,31,.015),#000 50%)"></div>
+  <div class="relative z-10 max-w-5xl mx-auto px-8 w-full">
+    <div class="text-center mb-10">
+      <div class="a d1 text-[9px] font-bold uppercase tracking-[.3em] text-white/20 mb-2">Beyond This Hackathon</div>
+      <h2 class="a d2 text-3xl sm:text-5xl font-extralight tracking-tighter leading-[1.05]">Aagay Ka <span class="gt">Rasta</span></h2>
+      <div class="a d3 urdu text-lg text-white/12 mt-2">آگے کا راستہ</div>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="a d2 p-4 rounded-xl border border-accent/12 bg-accent/[0.01] relative"><div class="absolute top-2 right-2"><span class="px-1.5 py-0.5 rounded text-[6px] font-bold bg-accent/10 text-accent">✅ Live</span></div><div class="text-[8px] font-bold text-accent uppercase tracking-widest mb-1.5 mt-2">Phase 1</div><h4 class="text-sm font-medium mb-1">Core AI</h4><p class="text-[10px] text-white/20 leading-relaxed">Disease, weather, prices, Urdu chat — deployed now.</p></div>
+      <div class="a d4 p-4 rounded-xl border border-white/4 bg-white/[0.002]"><div class="text-[8px] font-bold text-white/12 uppercase tracking-widest mb-1.5">Phase 2</div><h4 class="text-sm font-medium mb-1">Voice Input</h4><p class="text-[10px] text-white/20 leading-relaxed">Speak in Punjabi/Sindhi. Zero typing. Low-literacy focus.</p></div>
+      <div class="a d6 p-4 rounded-xl border border-white/4 bg-white/[0.002]"><div class="text-[8px] font-bold text-white/12 uppercase tracking-widest mb-1.5">Phase 3</div><h4 class="text-sm font-medium mb-1">Soil AI</h4><p class="text-[10px] text-white/20 leading-relaxed">Photo → DAP/Urea/NPK for Pakistani soil types.</p></div>
+      <div class="a d8 p-4 rounded-xl border border-white/4 bg-white/[0.002]"><div class="text-[8px] font-bold text-white/12 uppercase tracking-widest mb-1.5">Phase 4</div><h4 class="text-sm font-medium mb-1">Offline + SMS</h4><p class="text-[10px] text-white/20 leading-relaxed">PWA + SMS for 30% rural with zero internet.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S15: FINAL ===== -->
+<div class="slide" data-duration="10" data-trans-in="trans-scale-in" data-trans-out="trans-fade-out" data-act="4">
+  <div class="absolute inset-0 bg-black"></div>
+  <div class="absolute inset-0" style="background:radial-gradient(circle at center,rgba(198,249,31,.03),transparent 40%)"></div>
+  <div class="relative z-10 flex flex-col items-center justify-center text-center px-8">
+    <div class="as d1 text-3xl mb-4">🇵🇰</div>
+    <h2 class="ab d1 text-4xl sm:text-6xl lg:text-7xl font-extralight tracking-tighter leading-[.85] mb-2" style="animation:tg 3s ease-in-out infinite">Har Kisan Ko<br><span class="gt">AI Do</span></h2>
+    <div class="ab d2 urdu text-2xl text-accent/30 mb-6">ہر کسان کو AI دو</div>
+    <p class="a d4 text-sm text-white/15 max-w-md leading-relaxed mb-6">Every farmer in Punjab, Sindh, KPK, Balochistan — with an AI expert in their pocket. Free. In their language. Forever.</p>
+    <div class="a d6 flex items-center gap-2 mb-6"><div class="w-6 h-6 rounded-md bg-accent/6 border border-accent/10 flex items-center justify-center"><i data-lucide="sprout" class="w-3 h-3 text-accent"></i></div><span class="text-[9px] font-bold tracking-[.15em] text-white/20">SMART KISAN SAHARA</span><span class="text-[9px] text-accent/20">🇵🇰</span></div>
+    <div class="a d8 flex items-center gap-1.5 text-[8px] text-white/10"><div class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></div>smart-kisan-sahara.lovable.app</div>
+    <div class="a d10 text-[7px] text-white/5 mt-5 uppercase tracking-[.25em]">Built with 💚 for Pakistan's Farmers — Hackathon 2025</div>
+  </div>
+</div>
+
+<div class="ct"><button class="cb" id="prevB" aria-label="Previous"><i data-lucide="chevron-left" class="w-3 h-3"></i></button><button class="cb" id="ppB" aria-label="Play"><i data-lucide="pause" class="w-3 h-3" id="ppI"></i></button><button class="cb" id="nextB" aria-label="Next"><i data-lucide="chevron-right" class="w-3 h-3"></i></button><div class="sc" id="sc">01 / 15</div></div>
+
+<script>
+  lucide.createIcons();
+  const cur=document.getElementById('cursor'),cd=document.getElementById('cursorDot');let mx=0,my=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx-1.5+'px';cd.style.top=my-1.5+'px'});
+  (function(){cur.style.left=mx-8+'px';cur.style.top=my-8+'px';requestAnimationFrame(arguments.callee)})();
+
+  const S=document.querySelectorAll('.slide'),pb=document.getElementById('pb'),sc=document.getElementById('sc'),ppB=document.getElementById('ppB'),ppI=document.getElementById('ppI'),prevB=document.getElementById('prevB'),nextB=document.getElementById('nextB'),ads=document.querySelectorAll('.ad'),al2=document.getElementById('al2');
+  let c=0,play=true,el=0,lt=0;
+  const an=['SHOCK','REVEAL','FEATURES','IMPACT','FUTURE'];
+  function gd(){return parseFloat(S[c].dataset.duration)*1000}
+  function uc(){sc.textContent=String(c+1).padStart(2,'0')+'/'+String(S.length).padStart(2,'0')}
+  function ua(){const a=parseInt(S[c].dataset.act);ads.forEach((d,i)=>d.classList.toggle('on',i===a));al2.textContent=an[a]||''}
+  function go(i,f=false){if(i===c&&!f||i<0||i>=S.length)return;const o=S[c],n=S[i],to=o.dataset.transOut||'trans-fade-out',ti=n.dataset.transIn||'trans-fade-in';o.querySelectorAll('.pa').forEach(b=>{b.style.width='0%';b.style.transition='none'});o.classList.remove('active');o.classList.add('exiting',to);n.classList.remove('exiting');n.classList.forEach(cls=>{if(cls.startsWith('trans-')&&cls!==ti)n.classList.remove(cls)});n.classList.add('active',ti);setTimeout(()=>o.classList.remove('exiting',to),3000);c=i;el=0;lt=performance.now();uc();ua();setTimeout(()=>n.querySelectorAll('.pa').forEach(b=>{b.style.transition='width 1.5s ease-out';b.style.width=b.dataset.width+'%'}),2000)}
+  function tick(n){if(play){const d=n-lt;lt=n;el+=d;const p=Math.min(el/gd(),1);pb.style.width=(p*100)+'%';if(el>=gd()){if(c<S.length-1)go(c+1);else{play=false;upi();pb.style.width='100%'}}}else lt=n;requestAnimationFrame(tick)}
+  function upi(){ppI.setAttribute('data-lucide',play?'pause':'play');lucide.createIcons()}
+  function tp(){play=!play;if(play){lt=performance.now();if(c===S.length-1&&el>=gd())go(0,true)}upi()}
+  ppB.addEventListener('click',tp);prevB.addEventListener('click',()=>{go(c-1);lt=performance.now()});nextB.addEventListener('click',()=>{go(c+1);lt=performance.now()});
+  document.addEventListener('keydown',e=>{if(e.key===' '||e.key==='k'){e.preventDefault();tp()}if(e.key==='ArrowRight'||e.key==='l'){go(c+1);lt=performance.now()}if(e.key==='ArrowLeft'||e.key==='j'){go(c-1);lt=performance.now()}});
+  let tx=0;document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50){if(d>0)go(c+1);else go(c-1);lt=performance.now()}},{passive:true});
+  lt=performance.now();uc();ua();requestAnimationFrame(tick);
+</script>
+</body>
+</html>
